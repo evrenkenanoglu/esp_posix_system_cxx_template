@@ -27,17 +27,17 @@
 #include "freertos/timers.h"
 
 ///** POSIX Includes **///
-#include <pthread.h>
 #include "esp_pthread.h"
+#include <pthread.h>
 
 ///** CPP Standard Includes **//
- #include <iostream>
- #include <thread>
 #include <chrono>
-#include <memory>
-#include <string>
-#include <sstream>
+#include <iostream>
 #include <list>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <thread>
 
 //** Process Architecture Includes **//
 #include "porting.h"
@@ -76,13 +76,13 @@ typedef struct
 {
     eProcessID_t senderProcess; ///> Sender Process ID
     eTaskID_t    senderTask;    ///> Sender Task ID
-    uint32_t     data;       ///> Data pointer
+    uint32_t     data;          ///> Data pointer
 } Message_t;
 
 /** MACROS ********************************************************************/
 
 // #define GLOBAL_QUEUE_LIST_CREATE(_size) \ ///< Inter-Tasks Communications
-//QueueHandle_t systemQueueList[eTaskMax];
+// QueueHandle_t systemQueueList[eTaskMax];
 
 #ifndef FILE_SYSTEM_C
 #define INTERFACE extern

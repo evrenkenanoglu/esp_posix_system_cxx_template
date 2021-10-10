@@ -4,13 +4,17 @@
 using namespace std;
 PROCESS_DEMO_CREATE(demo1, eProcessDemo1)
 
-#define THREAD_SLEEP_DURATION_IN_SEC 3
+#define THREAD_SLEEP_DURATION_IN_SEC      2
+#define THREAD_MAIN_SLEEP_DURATION_IN_SEC 10
 
-const auto sleepTime = chrono::seconds{THREAD_SLEEP_DURATION_IN_SEC};
+const auto sleepTime     = chrono::seconds{THREAD_SLEEP_DURATION_IN_SEC};
+const auto sleepMainTime = chrono::seconds{THREAD_MAIN_SLEEP_DURATION_IN_SEC};
 
 const char* thread1Tag = "Thread1";
 const char* thread2Tag = "Thread2";
 const char* thread3Tag = "Thread3";
+
+pthread_mutex_t mutext1 = PTHREAD_MUTEX_INITIALIZER;
 
 esp_pthread_cfg_t create_config(const char* name, int core_id, int stack, int prio)
 {
@@ -22,75 +26,62 @@ esp_pthread_cfg_t create_config(const char* name, int core_id, int stack, int pr
     return cfg;
 }
 
-void thread1Func(const char* arg)
+void* thread1Func(void* params)
 {
     for (;;)
     {
-        cout << "Thread 1 !!!" << endl;
+        cout << endl;
+        cout << (const char*)params << endl;
         cout << "ID: " << this_thread::get_id() << endl;
         cout << "CoreID: " << xPortGetCoreID() << endl;
-        cout << arg << endl;
         this_thread::sleep_for(sleepTime);
     }
 }
 
-void thread2Func()
+void* thread2Func(void* params)
 {
-
     for (;;)
     {
-        cout << "Thread 2 !!!" << endl;
+        cout << endl;
+        cout << (const char*)params << endl;
         cout << "ID: " << this_thread::get_id() << endl;
         cout << "CoreID: " << xPortGetCoreID() << endl;
         this_thread::sleep_for(sleepTime);
-
     }
 }
 
-void thread3Func()
+void thread3Func(void* params)
 {
     for (;;)
     {
-        cout << "Thread 3 !!!" << endl;
+        cout << endl;
+        cout << (const char*)params << endl;
         cout << "ID: " << this_thread::get_id() << endl;
         cout << "CoreID: " << xPortGetCoreID() << endl;
         this_thread::sleep_for(sleepTime);
-
     }
 }
 extern "C" void app_main(void)
 {
-
-    const char* passArg      = "Passing Argument";
-    auto        threadConfig = esp_pthread_get_default_config();
-
-    esp_pthread_set_cfg(&threadConfig);
-    thread any_core(thread1Func, passArg);
-
-    auto threadConfig2 = create_config(thread2Tag, 0, 3 * 1024, 5);
-    esp_pthread_set_cfg(&threadConfig2);
-    thread thread2(thread2Func);
-
-    auto threadConfig3 = create_config(thread3Tag, 1, 3 * 1024, 5);
-    esp_pthread_set_cfg(&threadConfig3);
-    thread thread3(thread3Func);
-
-    // any_core.join();
-    // thread2.join();
     processStart(&demo1);
-    int i = 0;
-    thread2.join();
-    thread3.joinable();
+    pthread_t   thread1, thread2;
+    const char* message1 = "Thread 1";
+    const char* message2 = "Thread 2";
+    int         error;
 
-    this_thread::sleep_for(sleepTime);
+    if ((error = pthread_create(&thread1, NULL, &thread1Func, (void*)message1)))
+    {
+        cout << "Thread 1 creation failed ErrNo: " << error << endl;
+    }
+    if ((error = pthread_create(&thread2, NULL, &thread2Func, (void*)message2)))
+{
+        cout << "Thread 2 creation failed ErrNo: " << error << endl;
+    }
 
-    
     while (1)
     {
-        printf("[%d] Hello world!\n", i);
-        cout << "New Line " << endl;
-        i++;
-
-        this_thread::sleep_for(sleepTime);
+        static int i = 0;
+        cout << "[" << i++ << "] <<MAIN THREAD RUNNING>>" << endl;
+        this_thread::sleep_for(sleepMainTime);
     }
 }
