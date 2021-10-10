@@ -35,6 +35,7 @@ void* thread1Func(void* params)
         cout << "ID: " << this_thread::get_id() << endl;
         cout << "CoreID: " << xPortGetCoreID() << endl;
         this_thread::sleep_for(sleepTime);
+        pthread_exit(NULL);
     }
 }
 
@@ -47,6 +48,7 @@ void* thread2Func(void* params)
         cout << "ID: " << this_thread::get_id() << endl;
         cout << "CoreID: " << xPortGetCoreID() << endl;
         this_thread::sleep_for(sleepTime);
+        pthread_exit(NULL);
     }
 }
 
@@ -63,7 +65,6 @@ void thread3Func(void* params)
 }
 extern "C" void app_main(void)
 {
-    processStart(&demo1);
     pthread_t   thread1, thread2;
     const char* message1 = "Thread 1";
     const char* message2 = "Thread 2";
@@ -74,10 +75,12 @@ extern "C" void app_main(void)
         cout << "Thread 1 creation failed ErrNo: " << error << endl;
     }
     if ((error = pthread_create(&thread2, NULL, &thread2Func, (void*)message2)))
-{
+    {
         cout << "Thread 2 creation failed ErrNo: " << error << endl;
     }
 
+
+    processStart(&demo1);
     while (1)
     {
         static int i = 0;

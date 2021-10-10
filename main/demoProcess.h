@@ -37,15 +37,17 @@ public:
     uint32_t suspend();
     uint32_t resume();
     uint32_t terminate();
+
+    static void* thread1Func(void* params);
 };
 
-#define PROCESS_DEMO_CREATE(_name, _enum) \
-    DemoProcess _name;                    \
-    demoParams_t _name##Params = {        \
-        .dummyValue = 10,                 \
-    };                                    \
-    demoConsts_t _name##Consts = {        \
-        .constDummyValue = 0,             \
+#define PROCESS_DEMO_CREATE(_name, _enum)                                                                                                                                                              \
+    DemoProcess  _name;                                                                                                                                                                                \
+    demoParams_t _name##Params = {                                                                                                                                                                     \
+        .dummyValue = 10,                                                                                                                                                                              \
+    };                                                                                                                                                                                                 \
+    demoConsts_t _name##Consts = {                                                                                                                                                                     \
+        .constDummyValue = 0,                                                                                                                                                                          \
     };
 
 // _name._state = eProcessStateIdle;

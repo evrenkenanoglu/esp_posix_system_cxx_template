@@ -103,11 +103,10 @@ typedef enum
 class Process
 {
 protected:
+public:
     processID_t _ID;
     void *_parameters;
     const void *_constants;
-
-public:
     std::list<TaskHandle_t *> _taskList;
     uint8_t _state;
     // virtual ~Process() {}
