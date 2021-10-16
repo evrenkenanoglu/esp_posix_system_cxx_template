@@ -9,8 +9,6 @@ PROCESS_DEMO_CREATE(demo1, eProcessDemo1)
 
 extern "C" void app_main(void)
 {
-    // demo1._parameters = &demo1Params;
-    // demo1._constants = &demo1Consts;
     processStart(&demo1);
     while (1)
     {

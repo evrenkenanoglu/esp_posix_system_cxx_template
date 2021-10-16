@@ -77,7 +77,7 @@ typedef enum
  *  @param      _processPtr   pointer of process object
  *  @param      _stateEnum    enumeration of state
  */
-#define PROCESS_STATE_CHANGE(_processPtr, _stateEnum) _processPtr->state = _stateEnum
+#define PROCESS_STATE_CHANGE(_processPtr, _stateEnum) _processPtr->_state = _stateEnum
 
 /** @brief      Process state change macro
  *  @param      _processPtr   pointer of process object
@@ -103,17 +103,26 @@ typedef enum
 class Process
 {
 protected:
-public:
-    processID_t           _ID;
     void*                 _parameters;
     const void*           _constants;
+    eProcessState_t       _state;
+    processID_t           _ID;
     std::list<pthread_t*> threadList;
-    uint8_t               _state;
-    // virtual ~Process() {}
+
+public:
+    virtual ~Process() {}
     virtual PROCESS_START_FUNC(start)         = 0;
     virtual PROCESS_SUSPEND_FUNC(suspend)     = 0;
     virtual PROCESS_RESUME_FUNC(resume)       = 0;
     virtual PROCESS_TERMINATE_FUNC(terminate) = 0;
+    eProcessState_t getState(void)
+    {
+        return this->_state;
+    }
+    void setState(eProcessState_t state)
+    {
+        this->_state = state;
+    }
 };
 
 #define PROCESS_CREATE(_name, _id, _params, _consts)                                                                                                                                                   \

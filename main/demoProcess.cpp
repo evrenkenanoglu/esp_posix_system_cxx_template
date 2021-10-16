@@ -33,18 +33,20 @@ uint32_t DemoProcess::start()
     ESP_LOGI(processTag, " Process Started!");
     demoParams_t*       params = (demoParams_t*)this->_parameters;
     const demoConsts_t* consts = (demoConsts_t*)this->_constants;
-    
+
     pthread_t thread1, thread2;
     int       error;
     if ((error = pthread_create(&thread1, NULL, &DemoProcess::thread1Func, this)))
         cout << "Thread 1 creation failed ErrNo: " << error << endl;
     else
         this->threadList.push_back(&thread1);
-    if ((error = pthread_create(&thread2, NULL, &DemoProcess::thread2Func, (void*)this)))
+    if ((error = pthread_create(&thread2, NULL, &DemoProcess::thread2Func, this)))
         cout << "Thread 2 creation failed ErrNo: " << error << endl;
     else
         this->threadList.push_back(&thread2);
 
+    PROCESS_STATE_CHANGE(this, eProcessStateRunning);
+    cout << "Process Changed State: " << eProcessStateRunning << endl;
     return EXIT_SUCCESS;
 }
 
@@ -80,7 +82,7 @@ void* DemoProcess::thread1Func(void* parameters)
         cout << endl;
         cout << "<<" << processTag << ">>" << message1 << " Running" << endl;
         cout << "ID: " << this_thread::get_id() << endl;
-        // cout << "CoreID: " << xPortGetCoreID() << endl;
+        cout << "CoreID: " << xPortGetCoreID() << endl;
         cout << "Counter Value: " << ++params->dummyValue << endl;
         cout << endl;
         this_thread::sleep_for(sleepTime);
@@ -91,7 +93,7 @@ void* DemoProcess::thread1Func(void* parameters)
 void* DemoProcess::thread2Func(void* parameters)
 {
     const char*         message1 = "Thread 2";
-    Process*            process  = (Process*)parameters;
+    DemoProcess*        process  = (DemoProcess*)parameters;
     demoParams_t*       params   = (demoParams_t*)process->_parameters;
     const demoConsts_t* consts   = (demoConsts_t*)process->_constants;
 
@@ -107,7 +109,7 @@ void* DemoProcess::thread2Func(void* parameters)
         cout << endl;
         cout << "<<" << processTag << ">>" << message1 << " Running" << endl;
         cout << "ID: " << this_thread::get_id() << endl;
-        // cout << "CoreID: " << xPortGetCoreID() << endl;
+        cout << "CoreID: " << xPortGetCoreID() << endl;
         cout << "Counter Value: " << ++params->dummyValue << endl;
         cout << endl;
         this_thread::sleep_for(sleepTime);

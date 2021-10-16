@@ -52,6 +52,11 @@
 
 #define QUEUE_SIZE   32 // Default Queue List Size
 
+#define SYS_ENABLE   0
+#define SYS_DISABLE  1
+
+#define DEBUG_PRINT_ENABLE SYS_ENABLE
+
 /** TYPEDEFS ******************************************************************/
 
 typedef enum
@@ -72,9 +77,9 @@ typedef enum
 
 typedef struct
 {
-    eProcessID_t    senderProcess; ///> Sender Process ID
-    eThreadID_t     senderThread;    ///> Sender Task ID
-    uint32_t        data;          ///> Data pointer
+    eProcessID_t senderProcess; ///> Sender Process ID
+    eThreadID_t  senderThread;  ///> Sender Task ID
+    uint32_t     data;          ///> Data pointer
 } Message_t;
 
 /** MACROS ********************************************************************/

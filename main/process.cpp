@@ -28,7 +28,7 @@ using namespace std;
 /** INTERFACE FUNCTION DEFINITIONS ********************************************/
 uint32_t processStart(Process* process)
 {
-    if ((process->_state == eProcessStateIdle) || (process->_state == eProcessStateTerminated))
+    if ((process->getState() == eProcessStateIdle) || (process->getState() == eProcessStateTerminated))
     {
         // Critical Sections Enter
 
@@ -48,7 +48,7 @@ uint32_t processStart(Process* process)
 
 uint32_t processSuspend(Process* process)
 {
-    if (process->_state == eProcessStateRunning)
+    if (process->getState() == eProcessStateRunning)
     {
         // Critical Sections Enter
 
@@ -68,7 +68,7 @@ uint32_t processSuspend(Process* process)
 
 uint32_t processResume(Process* process)
 {
-    if (process->_state == eProcessStateSuspended)
+    if (process->getState() == eProcessStateSuspended)
     {
         // Critical Sections Enter
         process->resume();
@@ -88,7 +88,7 @@ uint32_t processResume(Process* process)
 
 uint32_t processTerminate(Process* process)
 {
-    if ((process->_state == eProcessStateRunning) || (process->_state == eProcessStateSuspended))
+    if ((process->getState() == eProcessStateRunning) || (process->getState() == eProcessStateSuspended))
     {
         // Critical Sections Enter
 
