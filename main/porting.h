@@ -49,6 +49,12 @@
  */
 #define TASK_TERMINATE(_handle)                                                        vTaskDelete(_handle)
 
+
+
+#define IPC_QUEUE_CREATE()
+
+
+
 #ifndef FILE_PORTING_C
 #define INTERFACE extern
 #else

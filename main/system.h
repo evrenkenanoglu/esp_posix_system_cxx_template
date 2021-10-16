@@ -57,13 +57,11 @@
 typedef enum
 {
     //**Demo App **//
-    eTaskDemo1 = 0,
-
+    eThread1 = 0,
+    eThread2,
     //**Demo App2 **//
-    eTaskDemo2,
-
-    eTaskMax,
-} eTaskID_t;
+    eThreadMax,
+} eThreadID_t;
 
 typedef enum
 {
@@ -74,9 +72,9 @@ typedef enum
 
 typedef struct
 {
-    eProcessID_t senderProcess; ///> Sender Process ID
-    eTaskID_t    senderTask;    ///> Sender Task ID
-    uint32_t     data;          ///> Data pointer
+    eProcessID_t    senderProcess; ///> Sender Process ID
+    eThreadID_t     senderThread;    ///> Sender Task ID
+    uint32_t        data;          ///> Data pointer
 } Message_t;
 
 /** MACROS ********************************************************************/

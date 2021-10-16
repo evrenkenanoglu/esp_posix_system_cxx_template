@@ -31,7 +31,11 @@ class DemoProcess : public Process
 {
 private:
 public:
-    DemoProcess(/* args */) {}
+    DemoProcess(demoParams_t* _params, demoConsts_t* _consts)
+    {
+        this->_parameters = _params;
+        this->_constants  = _consts;
+    }
     ~DemoProcess() {}
     uint32_t start();
     uint32_t suspend();
@@ -39,21 +43,38 @@ public:
     uint32_t terminate();
 
     static void* thread1Func(void* params);
+    static void* thread2Func(void* params);
+
+    // uint32_t getDummyValue(void)
+    // {
+    //     return this->_parameters->dummyValue;
+    // }
+    // void setDummyValue(uint32_t value)
+    // {
+    //     this->_parameters->dummyValue = value;
+    // }
+
+    // void printDummyValue()
+    // {
+    //     cout << "Dummy Value: " << this->_parameters->dummyValue;
+    // }
 };
 
 #define PROCESS_DEMO_CREATE(_name, _enum)                                                                                                                                                              \
-    DemoProcess  _name;                                                                                                                                                                                \
     demoParams_t _name##Params = {                                                                                                                                                                     \
-        .dummyValue = 10,                                                                                                                                                                              \
+        .dummyValue = 0,                                                                                                                                                                               \
     };                                                                                                                                                                                                 \
     demoConsts_t _name##Consts = {                                                                                                                                                                     \
         .constDummyValue = 0,                                                                                                                                                                          \
-    };
+    };                                                                                                                                                                                                 \
+    DemoProcess _name(&_name##Params, &_name##Consts);
 
+// _name._parameters = &_name##Params;
+// _name._constants  = &_name##Consts;
+// _name->_process            = &_name##Params;
+// _name->process = &_name##Consts;
 // _name._state = eProcessStateIdle;
 // _name._ID = _enum;
-// _name._parameters = &_name##Params;
-// _name._constants = &_name##Consts;
 
 /** MACROS ********************************************************************/
 
