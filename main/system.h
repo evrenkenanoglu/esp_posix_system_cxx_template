@@ -47,13 +47,13 @@
 #include "esp_log.h"
 
 /** CONSTANTS *****************************************************************/
-#define EXIT_SUCCESS 0
-#define EXIT_FAILURE 1
+#define EXIT_SUCCESS       0
+#define EXIT_FAILURE       1
 
-#define QUEUE_SIZE   32 // Default Queue List Size
+#define QUEUE_SIZE         32 // Default Queue List Size
 
-#define SYS_ENABLE   0
-#define SYS_DISABLE  1
+#define SYS_ENABLE         0
+#define SYS_DISABLE        1
 
 #define DEBUG_PRINT_ENABLE SYS_ENABLE
 
@@ -64,6 +64,7 @@ typedef enum
     //**Demo App **//
     eThread1 = 0,
     eThread2,
+    eThread3,
     //**Demo App2 **//
     eThreadMax,
 } eThreadID_t;
@@ -79,19 +80,20 @@ typedef struct
 {
     eProcessID_t senderProcess; ///> Sender Process ID
     eThreadID_t  senderThread;  ///> Sender Task ID
-    uint32_t     data;          ///> Data pointer
+    void*        data;          ///> Data pointer
 } Message_t;
 
 /** MACROS ********************************************************************/
-
-// #define GLOBAL_QUEUE_LIST_CREATE(_size) \ ///< Inter-Tasks Communications
-// QueueHandle_t systemQueueList[eTaskMax];
 
 #ifndef FILE_SYSTEM_C
 #define INTERFACE extern
 #else
 #define INTERFACE
 #endif
+
+#define GLOBAL_QUEUE_LIST_CREATE(_size) static QueueHandle_t systemQueueList[_size];
+
+static QueueHandle_t systemQueueList[eThreadMax]; ///< Inter-Tasks Communications
 
 /** VARIABLES *****************************************************************/
 

@@ -20,6 +20,7 @@ const char* tagTask1   = "Task1";
 
 /** MACROS ********************************************************************/
 #define THREAD_1_SLEEP_DURATION_IN_SEC 2
+#define THREAD_2_SLEEP_DURATION_IN_SEC 4
 #define THREAD_1_QUEUE_SIZE            5
 /** VARIABLES *****************************************************************/
 
@@ -34,6 +35,11 @@ uint32_t DemoProcess::start()
     demoParams_t*       params = (demoParams_t*)this->_parameters;
     const demoConsts_t* consts = (demoConsts_t*)this->_constants;
 
+    ///** FreeRtos Queue Initialize **///
+    systemQueueList[eThread1] = xQueueCreate(5, sizeof(Message_t));
+    systemQueueList[eThread2] = xQueueCreate(5, sizeof(Message_t));
+
+    ///** Posix Thread Creation **///
     pthread_t thread1, thread2;
     int       error;
     if ((error = pthread_create(&thread1, NULL, &DemoProcess::thread1Func, this)))
@@ -71,7 +77,7 @@ void* DemoProcess::thread1Func(void* parameters)
     const demoConsts_t* consts   = (demoConsts_t*)process->_constants;
 
     BaseType_t       xStatus;
-    Message_t*       receivedMessage; //= { 0, 0, 0,};
+    Message_t        receivedMessage; //= { 0, 0, 0,};
     const TickType_t tickToWait = pdMS_TO_TICKS(0);
 
     const auto sleepTime = chrono::seconds{THREAD_1_SLEEP_DURATION_IN_SEC};
@@ -81,9 +87,42 @@ void* DemoProcess::thread1Func(void* parameters)
         pthread_mutex_lock(&mutex1);
         cout << endl;
         cout << "<<" << processTag << ">>" << message1 << " Running" << endl;
-        cout << "ID: " << this_thread::get_id() << endl;
-        cout << "CoreID: " << xPortGetCoreID() << endl;
-        cout << "Counter Value: " << ++params->dummyValue << endl;
+        // cout << "ID: " << this_thread::get_id() << endl;
+        // cout << "CoreID: " << xPortGetCoreID() << endl;
+        // cout << "Counter Value: " << ++params->dummyValue << endl;
+        // cout << endl;
+
+        if (uxQueueMessagesWaiting(systemQueueList[eThread1]) != 0)
+        {
+            cout << "Queue is not empt" << endl;
+        }
+
+        xStatus = xQueueReceive(systemQueueList[eThread1], &receivedMessage, tickToWait);
+
+        if (xStatus != pdPASS)
+        {
+            cout << "Couldn't received anything from queue" << endl;
+        }
+        else
+        {
+            cout << "Message Received from Process: " << receivedMessage.senderProcess << "| Thread: " << receivedMessage.senderThread << endl;
+            cout << "Received message: " << *(uint32_t*)receivedMessage.data << endl;
+
+            if (receivedMessage.senderProcess == eProcessDemo2)
+            {
+                cout << "Process2 Found!" << endl;
+                if (receivedMessage.senderThread == eThread2)
+                {
+                    cout << "Thread2 Found!" << endl;
+                }
+                else
+                {
+                    cout << "Thread2 Not Found!" << endl;
+                }
+            }
+            // printf("Received message: %d \n", receivedValue);
+        }
+
         cout << endl;
         this_thread::sleep_for(sleepTime);
         pthread_mutex_unlock(&mutex1);
@@ -99,18 +138,59 @@ void* DemoProcess::thread2Func(void* parameters)
 
     BaseType_t       xStatus;
     Message_t*       receivedMessage; //= { 0, 0, 0,};
+    Message_t        message;
     const TickType_t tickToWait = pdMS_TO_TICKS(0);
 
-    const auto sleepTime = chrono::seconds{THREAD_1_SLEEP_DURATION_IN_SEC};
+    const auto sleepTime = chrono::seconds{THREAD_2_SLEEP_DURATION_IN_SEC};
 
     for (;;)
     {
         pthread_mutex_lock(&mutex1);
         cout << endl;
-        cout << "<<" << processTag << ">>" << message1 << " Running" << endl;
-        cout << "ID: " << this_thread::get_id() << endl;
-        cout << "CoreID: " << xPortGetCoreID() << endl;
-        cout << "Counter Value: " << ++params->dummyValue << endl;
+        cout << "<<" << processTag << ">> " << message1 << " Running" << endl;
+        // cout << "ID: " << this_thread::get_id() << endl;
+        // cout << "CoreID: " << xPortGetCoreID() << endl;
+        // cout << "Counter Value: " << ++params->dummyValue << endl;
+        // cout << endl;
+
+        static uint8_t state = 0;
+        uint32_t       value;
+        if (state == 0)
+        {
+            value                 = 16000;
+            message.senderProcess = eProcessID_t(process->_ID);
+            message.senderThread  = eThread2;
+            message.data          = &value;
+        }
+        else
+        {
+            value                 = 32000;
+            message.senderProcess = eProcessID_t(process->_ID);
+            message.senderThread  = eThread2;
+            message.data          = &value;
+        }
+        state = !state;
+
+        xStatus = uxQueueSpacesAvailable(systemQueueList[eThread1]);
+        cout << "Available Space in Queue of Thread1: " << xStatus << endl;
+        if (xStatus == 0)
+        {
+            // cout << "No available space in Queue of Task1" << endl;;
+        }
+        else
+        {
+            xStatus = xQueueSend(systemQueueList[eThread1], &message, tickToWait);
+            if (xStatus != pdPASS)
+            {
+                cout << "Message Couldn't Send!" << endl;
+                ;
+            }
+            else
+            {
+                cout << "Message Send Succesfull" << endl;
+                ;
+            }
+        }
         cout << endl;
         this_thread::sleep_for(sleepTime);
         pthread_mutex_unlock(&mutex1);

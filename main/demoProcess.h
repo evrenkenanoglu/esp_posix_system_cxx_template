@@ -31,14 +31,15 @@ class DemoProcess : public Process
 {
 private:
 public:
-    DemoProcess(demoParams_t* _params, demoConsts_t* _consts, processID_t _enum)
+    DemoProcess(demoParams_t* _params, demoConsts_t* _consts, eProcessID_t _enum)
     {
         this->_parameters = _params;
         this->_constants  = _consts;
-        this->_ID = _enum;
+        this->_ID         = _enum;
         PROCESS_STATE_CHANGE(this, eProcessStateIdle);
     }
-    ~DemoProcess() {
+    ~DemoProcess()
+    {
         delete this;
     }
     uint32_t start();
@@ -48,7 +49,6 @@ public:
 
     static void* thread1Func(void* params);
     static void* thread2Func(void* params);
-
 };
 
 #define PROCESS_DEMO_CREATE(_name, _enum)                                                                                                                                                              \
