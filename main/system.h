@@ -40,6 +40,7 @@
 #include <thread>
 
 //** Process Architecture Includes **//
+#include "device.h"
 #include "porting.h"
 #include "process.h"
 
@@ -47,18 +48,10 @@
 #include "esp_log.h"
 
 /** CONSTANTS *****************************************************************/
-#define EXIT_SUCCESS       0
-#define EXIT_FAILURE       1
-
-#define QUEUE_SIZE         32 // Default Queue List Size
-
-#define SYS_ENABLE         0
-#define SYS_DISABLE        1
-
-#define DEBUG_PRINT_ENABLE SYS_ENABLE
 
 /** TYPEDEFS ******************************************************************/
 
+///> @brief Thread ID list for the enumaration for Queue Creation
 typedef enum
 {
     //**Demo App **//
@@ -69,6 +62,7 @@ typedef enum
     eThreadMax,
 } eThreadID_t;
 
+///> @brief Process ID enumaration
 typedef enum
 {
     eProcessDemo1 = 1,
@@ -84,6 +78,20 @@ typedef struct
 } Message_t;
 
 /** MACROS ********************************************************************/
+#define EXIT_SUCCESS       0
+#define EXIT_FAIL          1
+
+#define QUEUE_SIZE         32 // Default Queue List Size
+
+#define SYS_ENABLE         1
+#define SYS_DISABLE        0
+
+#define DEBUG_PRINT_ENABLE SYS_ENABLE
+
+#define PLATFORM_SUCCESS   ESP_OK
+#define PLATFORM_FAIL      ESP_FAIL
+
+#define UNUSED(x) [&x]{}()
 
 #ifndef FILE_SYSTEM_C
 #define INTERFACE extern
